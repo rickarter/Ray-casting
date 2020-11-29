@@ -23,13 +23,22 @@ class Player:
             self.direction += self.rotation_speed * delta_time
 
     def clamp_angle(self, angle):
-        if angle < 0:
+        '''if angle < 0:
             angle = -angle
             if angle < math.pi:
                 angle = math.pi * 2 - angle
         if angle > math.pi * 2:
             angle = angle % (math.pi * 2)
-        return angle
+        return angle'''
+        new_angle = 0
+        if angle >= 0:
+            new_angle = angle - angle//(2*math.pi) * (2*math.pi) 
+        else:
+            pi2 = math.pi * 2
+            new_angle = pi2 + ((abs(angle)//pi2)*pi2 + angle)
+
+        return new_angle
+
 
     def cast_ray(self, direction, map, cellSize):
         angle = self.clamp_angle(direction)
@@ -38,7 +47,6 @@ class Player:
         looks_up = (math.pi > angle > 0)
 
         ROV = 10
-
         is_only_horizontal = angle == math.pi/2 or angle == 3 * math.pi / 2
         is_only_vertical = angle == math.pi or angle == 0
 
@@ -139,4 +147,109 @@ class Player:
         elif not has_horizontal_intersection and has_vertical_intersection:
             distance = distance_to_vertical_intersection
 
+        return has_horizontal_intersection or has_vertical_intersection, distance
+
+    def cast_ray_2(self, direction, map, CELLSIZE, screen):
+        angle = self.clamp_angle(direction)
+
+        looks_up = not (0 < angle < math.pi)
+        looks_right = not (math.pi/2 < angle < 3*math.pi/2)
+
+        ROV = 10
+
+        tan = math.tan(direction)
+
+        # Check horizontal intersection
+        has_horizontal_intersection = False
+        horizontal_distance = 0
+
+        if tan != 0:
+            # Projection of the vector to the nearest horizontal intersection
+            yo = -(self.position.y - (self.position.y // CELLSIZE) * CELLSIZE)
+            if not looks_up:
+                yo = CELLSIZE + yo
+            xo = yo / tan
+
+            # Projection of the step vector
+            ya = -CELLSIZE
+            if not looks_up:
+                ya = -ya
+            xa = ya / tan
+
+            current_x = self.position.x + xo
+            current_y = self.position.y + yo
+            for i in range(0, ROV+1):
+                ix = int(current_x // CELLSIZE)
+                iy = int(current_y // CELLSIZE)-1
+
+                # new_x = int(current_x / 320 * 175)
+                # new_y = int(current_y / 320 * 175)
+                # pygame.draw.circle(screen, (0, 255, 255),(new_x, new_y), 3);
+
+                if not looks_up:
+                    iy += 1
+
+                if ix < 0 or iy < 0 or ix > len(map[0])-1 or iy > len(map)-1:
+                    break
+
+                if map[iy][ix] == 1:
+                    has_horizontal_intersection = True
+                    horizontal_distance = (Vector2D(current_x, current_y) - self.position).Magnitude()
+                    break
+
+
+                current_x += xa
+                current_y += ya
+
+        # Check vertical intersection
+        has_vertical_intersection = False
+        vertical_distance = 0
+        if tan != 1:
+            # Projection of the vector to the nearest vertical intersection
+            xo = -(self.position.x - (self.position.x // CELLSIZE) * CELLSIZE)
+            if looks_right:
+                xo = CELLSIZE + xo
+            yo = tan * xo
+
+            # Projection of the step vector
+            xa = -CELLSIZE
+            if looks_right:
+                xa = -xa
+
+            ya = tan * xa
+
+            current_x = self.position.x + xo
+            current_y = self.position.y + yo
+
+            for i in range(0, ROV+1):
+                ix = int(current_x // CELLSIZE)-1
+                iy = int(current_y // CELLSIZE)
+
+                # new_x = int(current_x / 320 * 175)
+                # new_y = int(current_y / 320 * 175)
+                # pygame.draw.circle(screen, (0, 255, 255),(new_x, new_y), 3);
+
+                if looks_right:
+                    ix += 1
+
+                if ix < 0 or iy < 0 or ix > len(map[0])-1 or iy > len(map)-1:
+                    break
+
+                if map[iy][ix] == 1:
+                    has_vertical_intersection = True
+                    vertical_distance = (Vector2D(current_x, current_y) - self.position).Magnitude()
+                    break
+
+                current_x += xa
+                current_y += ya
+
+        distance = 0
+        if has_horizontal_intersection and not has_vertical_intersection:
+            distance = horizontal_distance
+        elif has_vertical_intersection and not has_horizontal_intersection:
+            distance = vertical_distance
+        else:
+            distance = min(horizontal_distance, vertical_distance)
+
+        # return has_horizontal_intersection, horizontal_distance 
         return has_horizontal_intersection or has_vertical_intersection, distance
