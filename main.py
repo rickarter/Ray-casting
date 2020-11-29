@@ -10,7 +10,7 @@ floorColor = (98, 163, 176)
 # Init map and its size
 world_map = [
             [1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1],
             [1, 0, 1, 0, 1],
             [1, 1, 1, 1, 1]
@@ -27,7 +27,7 @@ window = pygame.display.set_mode((window_width, window_height))
 
 #Init plaeyer
 player_position = Vector2D(map_width/2, map_height/2)
-player = Player(player_position, 60*math.pi/180, 0, 100, 10);
+player = Player(player_position, 90*math.pi/180, 0, 100, 10);
 
 def draw_map(screen, map):
     cellSize = 35 
@@ -54,14 +54,14 @@ def draw_player(screen, player, width, height):
     pygame.draw.line(screen, (255, 255, 255), (new_x, new_y), (new_x + math.cos(player.direction-player.FOV/2)*line_length, new_y + math.sin(player.direction-player.FOV/2)*line_length))
 
     # Drawing lines
-    '''step = player.FOV / window_width
+    step = player.FOV / window_width
     current_angle = player.direction-player.FOV/2
     for i in range(0, window_width):
         draw, line_length = player.cast_ray_2(current_angle, world_map, CELLSIZE, screen)
         line_length = line_length / map_width * width
         if draw:
             pygame.draw.line(screen, (0, 255, 0), (new_x, new_y), (new_x + math.cos(current_angle)*line_length, new_y + math.sin(current_angle)*line_length))
-        current_angle += step'''
+        current_angle += step
     
 
     '''draw, line_length = player.cast_ray_2(player.direction, world_map, CELLSIZE, screen)
@@ -69,9 +69,21 @@ def draw_player(screen, player, width, height):
     if draw:
         pygame.draw.line(screen, (0, 255, 0), (new_x, new_y), (new_x + math.cos(player.direction)*line_length, new_y + math.sin(player.direction)*line_length))'''
 
+def get_interpolated_color(initial_color, final_color, t):
+    if t > 1:
+        t = 1
+    red = initial_color[0] + (final_color[0]-initial_color[0])*t
+    green = initial_color[1] + (final_color[1]-initial_color[1])*t
+    blue = initial_color[2] + (final_color[2]-initial_color[2])*t
+    new_color = (red, green, blue)
+    return new_color
+
 half_cell = CELLSIZE/2
 half_height = window_height/2
 d = half_cell/math.tan(player.FOV/2)
+initial_color = (248, 12, 254) #(24, 224, 134)
+final_color = (121, 0, 156)#(0, 156, 66)
+max_length = CELLSIZE * 2
 
 def render(screen, player, map):
     current_angle = player.direction - player.FOV/2
@@ -82,8 +94,8 @@ def render(screen, player, map):
         line_ratio = half_cell/h2
         half_line_length = half_height * line_ratio
         if draw:
-            pygame.draw.line(screen, (151, 189, 216), (i, half_height+half_line_length), (i, half_height-half_line_length))
-
+            color = get_interpolated_color(initial_color, final_color, length/max_length)
+            pygame.draw.line(screen, color, (i, half_height+half_line_length), (i, half_height-half_line_length))
         current_angle += step
 
 #Main loop
@@ -99,8 +111,8 @@ while run:
     window.fill((0,0,0))    
     
     render(window, player, world_map)
-    draw_map(window, world_map)  
-    draw_player(window, player, len(world_map)*35, len(world_map[0])*35);  
+    # draw_map(window, world_map)  
+    # draw_player(window, player, len(world_map)*35, len(world_map[0])*35);  
 
     player.move_and_rotate(delta_time, pygame.key.get_pressed())   
     pygame.display.update()
