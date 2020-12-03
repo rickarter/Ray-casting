@@ -22,6 +22,11 @@ class Player:
         if keys[pygame.K_d]:
             self.direction += self.rotation_speed * delta_time
 
+        if keys[pygame.K_u]:
+            self.FOV += 1*delta_time
+        if keys[pygame.K_j]:
+            self.FOV -= 1*delta_time
+
     def clamp_angle(self, angle):
         '''if angle < 0:
             angle = -angle
@@ -244,12 +249,22 @@ class Player:
                 current_y += ya
 
         distance = 0
+        is_horizontal_the_nearest = False
         if has_horizontal_intersection and not has_vertical_intersection:
             distance = horizontal_distance
+            is_horizontal_the_nearest = True
         elif has_vertical_intersection and not has_horizontal_intersection:
             distance = vertical_distance
         else:
             distance = min(horizontal_distance, vertical_distance)
+            if horizontal_distance < vertical_distance:
+                is_horizontal_the_nearest = True
 
-        # return has_horizontal_intersection, horizontal_distance 
-        return has_horizontal_intersection or has_vertical_intersection, distance
+        # Removing destortion 
+        # beta = abs(self.clamp_angle(self.direction)-angle)
+        # if looks_up:
+        #     beta = math.pi*2 - abs(self.clamp_angle(self.direction)-angle)
+        # distance = distance * math.cos(beta)
+        # return has_horizontal_intersection, horizontal_distance, True
+        # return has_vertical_intersection, vertical_distance, False
+        return has_horizontal_intersection or has_vertical_intersection, distance, is_horizontal_the_nearest
