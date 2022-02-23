@@ -48,8 +48,8 @@ def draw_player(screen, player, width, height):
     new_x = int(player.position.x / map_width * width)
     new_y = int(player.position.y / map_height * height)
 
-    line_length = 10;
-    pygame.draw.circle(screen, (255, 255, 255),(new_x, new_y), 3);
+    line_length = 10
+    pygame.draw.circle(screen, (255, 255, 255),(new_x, new_y), 3)
     # pygame.draw.line(screen, (255, 255, 255), (new_x, new_y), (new_x + math.cos(player.direction)*line_length, new_y + math.sin(player.direction)*line_length))
     pygame.draw.line(screen, (255, 255, 255), (new_x, new_y), (new_x + math.cos(player.direction+player.FOV/2)*line_length, new_y + math.sin(player.direction+player.FOV/2)*line_length))
     pygame.draw.line(screen, (255, 255, 255), (new_x, new_y), (new_x + math.cos(player.direction-player.FOV/2)*line_length, new_y + math.sin(player.direction-player.FOV/2)*line_length))
@@ -58,7 +58,7 @@ def draw_player(screen, player, width, height):
     step = player.FOV / window_width
     current_angle = player.direction-player.FOV/2
     for i in range(0, window_width):
-        draw, line_length, draw_vertical = player.cast_ray_2(current_angle, world_map, CELLSIZE, screen)
+        draw, line_length, draw_vertical = player.cast_ray(current_angle, world_map, CELLSIZE, screen)
         line_length = line_length / map_width * width
         if draw:
             pygame.draw.line(screen, (24, 224, 134), (new_x, new_y), (new_x + math.cos(current_angle)*line_length, new_y + math.sin(current_angle)*line_length))
@@ -90,16 +90,16 @@ def render(screen, player, map):
     current_angle = player.direction - player.FOV/2
     step = player.FOV/(window_width-1)
     for i in range(0, window_width):
-        draw, length, draw_horizontal = player.cast_ray_2(current_angle, world_map, CELLSIZE, screen)
+        draw, length, draw_horizontal = player.cast_ray(current_angle, world_map, CELLSIZE, screen)
         h2 = (length/d) * half_cell
         if h2 != 0:
             line_ratio = half_cell/h2
             half_line_length = half_height * line_ratio
             if draw:
-                # color = get_interpolated_color(initial_color, final_color, length/max_length)
                 color = final_color
                 if draw_horizontal:
                     color = initial_color
+                # color = get_interpolated_color(initial_color, final_color, length/max_length)
                 pygame.draw.line(screen, color, (i, half_height+half_line_length), (i, half_height-half_line_length))
             current_angle += step
       
