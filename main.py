@@ -40,10 +40,8 @@ def draw_map(screen, map):
             if map[y][x] == 1:
                 color = wallColor
 
-            current_x = x
-            current_y = y
-            pygame.draw.rect(screen, color, (current_x*cellSize, current_y *
-                             cellSize, current_x+cellSize, current_y+cellSize))
+            pygame.draw.rect(screen, color, (x * cellSize, y *
+                             cellSize, x + cellSize, y + cellSize))
 
 
 def draw_player(screen, player, width, height):
