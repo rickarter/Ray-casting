@@ -86,7 +86,7 @@ final_color = (0, 151, 66)
 max_length = CELLSIZE * 2
 
 
-def render(screen, player, map):
+def render(screen, player):
     current_angle = player.direction - player.FOV/2
     step = player.FOV/(window_width-1)
     for i in range(0, window_width):
@@ -121,7 +121,7 @@ def main():
 
         window.fill((0, 0, 0))
 
-        render(window, player, world_map)
+        render(window, player)
         draw_map(window, world_map)
         draw_player(window, player, len(world_map)
                     * 35, len(world_map[0])*35)
