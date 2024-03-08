@@ -111,6 +111,9 @@ def main():
     run = True
     # Main loop
     while run:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_q] or keys[pygame.K_ESCAPE]:
+            run = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
