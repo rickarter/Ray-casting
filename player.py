@@ -24,21 +24,21 @@ class Player:
             self.direction += self.rotation_speed * delta_time
 
         if keys[pygame.K_u]:
-            self.FOV += 1*delta_time
+            self.FOV += 1 * delta_time
         if keys[pygame.K_j]:
-            self.FOV -= 1*delta_time
+            self.FOV -= 1 * delta_time
 
     def clamp_angle(self, angle):
         new_angle = 0
         if angle >= 0:
-            new_angle = angle - angle//(2*math.pi) * (2*math.pi)
+            new_angle = angle - angle // (2*math.pi) * (2*math.pi)
         else:
             pi2 = math.pi * 2
             new_angle = pi2 + ((abs(angle)//pi2)*pi2 + angle)
 
         return new_angle
 
-    def cast_ray(self, direction, map, CELLSIZE, screen):
+    def cast_ray(self, direction, map, CELLSIZE):
         angle = self.clamp_angle(direction)
 
         looks_up = not (0 < angle < math.pi)
