@@ -2,6 +2,7 @@ import pygame
 import math
 from vector import Vector2D
 
+
 class Player:
     def __init__(self, position, FOV, direction, movement_speed, rotation_speed):
         self.position = position
@@ -23,27 +24,27 @@ class Player:
             self.direction += self.rotation_speed * delta_time
 
         if keys[pygame.K_u]:
-            self.FOV += 1*delta_time
+            self.FOV += 1 * delta_time
         if keys[pygame.K_j]:
-            self.FOV -= 1*delta_time
+            self.FOV -= 1 * delta_time
 
     def clamp_angle(self, angle):
         new_angle = 0
         if angle >= 0:
-            new_angle = angle - angle//(2*math.pi) * (2*math.pi) 
+            new_angle = angle - angle // (2*math.pi) * (2*math.pi)
         else:
             pi2 = math.pi * 2
             new_angle = pi2 + ((abs(angle)//pi2)*pi2 + angle)
 
         return new_angle
 
-    def cast_ray(self, direction, map, CELLSIZE, screen):
+    def cast_ray(self, direction, map, CELLSIZE):
         angle = self.clamp_angle(direction)
 
         looks_up = not (0 < angle < math.pi)
         looks_right = not (math.pi/2 < angle < 3*math.pi/2)
 
-        ROV = 10
+        ROV = 5
 
         tan = math.tan(direction)
 
@@ -78,9 +79,9 @@ class Player:
 
                 if map[iy][ix] == 1:
                     has_horizontal_intersection = True
-                    horizontal_distance = (Vector2D(current_x, current_y) - self.position).Magnitude()
+                    horizontal_distance = (
+                        Vector2D(current_x, current_y) - self.position).Magnitude()
                     break
-
 
                 current_x += xs
                 current_y += ys
@@ -117,7 +118,8 @@ class Player:
 
                 if map[iy][ix] == 1:
                     has_vertical_intersection = True
-                    vertical_distance = (Vector2D(current_x, current_y) - self.position).Magnitude()
+                    vertical_distance = (
+                        Vector2D(current_x, current_y) - self.position).Magnitude()
                     break
 
                 current_x += xs
@@ -135,11 +137,9 @@ class Player:
             if horizontal_distance < vertical_distance:
                 is_horizontal_the_nearest = True
 
-        # Removing destortion 
+        # Removing destortion
         beta = abs(self.clamp_angle(self.direction)-angle)
         if looks_up:
             beta = math.pi*2 - abs(self.clamp_angle(self.direction)-angle)
         distance = distance * math.cos(beta)
-        # return has_horizontal_intersection, horizontal_distance, True
-        # return has_vertical_intersection, vertical_distance, False
         return has_horizontal_intersection or has_vertical_intersection, distance, is_horizontal_the_nearest

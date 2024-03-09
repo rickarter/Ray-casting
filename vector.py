@@ -1,5 +1,6 @@
 import math
 
+
 class Vector2D:
     def __init__(self, x, y):
         self.x = x
@@ -43,16 +44,13 @@ class Vector2D:
     def RotateAroundInRads(self, coordinateSystem, angle):
         localVector = self - coordinateSystem
         localVector.RotateInRads(angle)
-
         newVector = coordinateSystem + localVector
-        
-        self.x = newVector.x # Works
-        self.y = newVector.y # Works
-        #self = newVector # Doesn't work
+        self.x = newVector.x
+        self.y = newVector.y
 
     def GetAngleInRads(self):
         result = math.asin(self.Sin())
-        if(self.Cos() < 0):
+        if (self.Cos() < 0):
             result = math.pi - result
         return result
 
@@ -72,13 +70,12 @@ class Vector2D:
         localVector.SetAngleInRads(angle)
 
         newVector = coordinateSystem + localVector
-        
+
         self.x = newVector.x
         self.y = newVector.y
 
-
     def Magnitude(self):
-        return math.hypot(self.x , self.y)
+        return math.hypot(self.x, self.y)
 
     def Sin(self):
         if self.Magnitude() == 0:
