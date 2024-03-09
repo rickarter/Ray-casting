@@ -44,7 +44,7 @@ class Player:
         looks_up = not (0 < angle < math.pi)
         looks_right = not (math.pi/2 < angle < 3*math.pi/2)
 
-        ROV = 10
+        ROV = 5
 
         tan = math.tan(direction)
 
